@@ -1,0 +1,6 @@
+@import './color';
+
+@mixin linkReset {
+    color: $text-color1;
+    text-decoration: none;
+}
