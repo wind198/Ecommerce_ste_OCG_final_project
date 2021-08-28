@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"regexp"
 
+	"example.com/database/todb"
 	"github.com/gorilla/mux"
-	"github.com/tuanlh1908developer/ecommer_site_1/connectdb"
 	"github.com/urfave/negroni"
 )
 
@@ -29,7 +29,7 @@ type User struct {
 }
 
 var newDbHanlder = dbHandler{
-	connectdb.ConnectDB(),
+	todb.ConnectDB(),
 }
 
 func InitiallizeServer() {

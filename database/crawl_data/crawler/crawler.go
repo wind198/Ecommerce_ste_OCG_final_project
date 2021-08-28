@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"example.com/database/todb"
 	"github.com/gocolly/colly"
-	"github.com/tuanlh1908developer/webFilmCrawler/todb"
 )
 
 type Product struct {
@@ -61,11 +61,12 @@ func Crawl(db *sql.DB) {
 		}
 
 		imageSource = e.ChildAttr("div.product-info-inner > a", "href")
+		absImageSource := e.Request.AbsoluteURL(imageSource)
 		aProduct := Product{
 			productCategory:    category,
 			productName:        name,
 			productPrice:       price,
-			productImageSource: imageSource,
+			productImageSource: absImageSource,
 		}
 
 		rows, err := todb.InsertToDB(db, aProduct.productCategory, aProduct.productName, aProduct.productPrice, aProduct.productImageSource)

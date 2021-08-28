@@ -1,10 +1,14 @@
 package main
 
 import (
-	"github.com/tuanlh1908developer/ecommer_site_1/api"
+	"example.com/database/crawl_data/crawler"
+	"example.com/database/todb"
 )
 
 func main() {
-	api.InitiallizeServer()
+	db := todb.ConnectDB()
+	crawler.Crawl(db)
+
+	// api.InitiallizeServer()
 
 }

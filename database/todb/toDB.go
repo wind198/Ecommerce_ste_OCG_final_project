@@ -31,7 +31,7 @@ func ConnectDB() *sql.DB {
 }
 
 func InsertToDB(db *sql.DB, category string, name string, price float64, imageSource string) (int64, error) {
-	q := `insert into product(productCategory,productName,productPrice,productImageSource)
+	q := `insert into newTable(productCategory,productName,productPrice,productImageSource)
 	values(?,?,?,?)`
 	res, err := db.Exec(q, category, name, price, imageSource)
 	if err != nil {
