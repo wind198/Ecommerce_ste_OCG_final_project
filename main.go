@@ -1,14 +1,11 @@
 package main
 
-import (
-	"example.com/database/crawl_data/crawler"
-	"example.com/database/todb"
-)
+import "example.com/api"
 
 func main() {
-	db := todb.ConnectDB()
-	crawler.Crawl(db)
+	// db := todb.ConnectDB()
+	// crawler.Crawl(db)
 
-	// api.InitiallizeServer()
+	api.InitiallizeServer()
 
 }

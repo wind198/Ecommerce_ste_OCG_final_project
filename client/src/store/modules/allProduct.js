@@ -8,13 +8,20 @@ const getters = {
 }
 const mutations = {
   muta_loadAllProduct: (state, allProduct) => {
-    console.log(allProduct);
-    state.hompageProduct = allProduct
+    state.allProduct = allProduct
   }
 }
 const actions = {
-  async act_loadAllProduct: ({ commit }) => {
+  async act_loadAllProduct({ commit }) {
+    console.log("hello");
     const response = await axios.get("/home")
-    commit('muta_loadAllProduct', response.data)
+    console.log(response.data);
+    commit('muta_loadAllProduct',await response.data)
   }
 }
+export default {
+  state,
+  getters,
+  actions,
+  mutations
+};

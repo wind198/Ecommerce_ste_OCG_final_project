@@ -28,59 +28,63 @@ func (p *Product) String() string {
 var validPriceString = regexp.MustCompile(`(.*)\$(\d+),?(\d*\.\d+)(.*)`)
 
 func Crawl(db *sql.DB) {
-	var category string
-	var name string
-	var price float64
-	var imageSource string
 
 	c1 := colly.NewCollector(colly.Async(true))
 	c2 := colly.NewCollector(colly.Async(true))
 	c1.OnHTML("ul.mega-stack", func(h *colly.HTMLElement) {
-		h.ForEach("li>a", func(i int, t *colly.HTMLElement) {
-			link := t.Attr("href")
+		h.ForEach("li", func(i int, t *colly.HTMLElement) {
+			link := t.ChildAttr("a", "href")
 			c2.Visit(t.Request.AbsoluteURL(link))
 		})
 
 	})
-	c2.OnHTML("h1", func(h *colly.HTMLElement) {
-		category = h.Text
-	})
-
-	c2.OnHTML("div.productindexinner", func(e *colly.HTMLElement) {
-		name = e.ChildText("h3")
-		priceText := e.ChildText("div.price div.prod-price")
-
-		var err error
-		m := validPriceString.FindStringSubmatch(priceText)
-		// log.Println(strings.Join(m, ", "))
-		if m != nil {
-			price, err = strconv.ParseFloat(m[2]+m[3], 64)
-			if err != nil {
-				log.Printf("Error during extracting price value, %v\n", err)
-			}
-		}
-
-		imageSource = e.ChildAttr("div.product-info-inner > a", "href")
-		absImageSource := e.Request.AbsoluteURL(imageSource)
-		aProduct := Product{
-			productCategory:    category,
-			productName:        name,
-			productPrice:       price,
-			productImageSource: absImageSource,
-		}
-
-		rows, err := todb.InsertToDB(db, aProduct.productCategory, aProduct.productName, aProduct.productPrice, aProduct.productImageSource)
-		if rows != 0 {
-			log.Printf("Insert for product %s suceed, %v affected\n", aProduct.String(), rows)
-		} else {
-			log.Printf("Insert for product %s failed, %v\n", aProduct.String(), err)
-		}
-	})
-
 	c2.OnRequest(func(r *colly.Request) {
 		fmt.Println("C2 visiting...", r.URL.String())
 		r.Headers.Add("Accept-Language", "en-US")
+
 	})
+	c2.OnHTML("body", func(h *colly.HTMLElement) {
+		var category string
+		var name string
+		var priceText string
+		var price float64
+		var imageSource string
+		category = strings.Trim(h.ChildText("h1.nope"), " \n")
+		if category == "" {
+			category = h.ChildText("h1:nth-child(1)")
+		}
+		h.ForEach("div.productindexinner", func(i int, e *colly.HTMLElement) {
+			name = e.ChildText("h3")
+			priceText = e.ChildText("div.price div.prod-price")
+
+			var err error
+			m := validPriceString.FindStringSubmatch(priceText)
+			// log.Println(strings.Join(m, ", "))
+			if m != nil {
+				price, err = strconv.ParseFloat(m[2]+m[3], 64)
+				if err != nil {
+					log.Printf("Error during extracting price value, %v\n", err)
+				}
+			}
+
+			imageSource = e.ChildAttr(".prod-image  img", "src")
+			aProduct := Product{
+				productCategory:    category,
+				productName:        name,
+				productPrice:       price,
+				productImageSource: imageSource,
+			}
+
+			rows, err := todb.InsertToDB(db, aProduct.productCategory, aProduct.productName, aProduct.productPrice, aProduct.productImageSource)
+			if rows != 0 {
+				log.Printf("Insert for product %s suceed, %v affected\n", aProduct.String(), rows)
+			} else {
+				log.Printf("Insert for product %s failed, %v\n", aProduct.String(), err)
+			}
+		})
+
+	})
+
 	c1.OnRequest(func(r *colly.Request) {
 		fmt.Println("C1 visiting...", r.URL.String())
 		r.Headers.Add("Accept-Language", "en-US")

@@ -1,30 +1,37 @@
 <template>
   <main>
-    <template v-for="category in allProduct" :key="category.id">
-      <Section :productArray="allProduct[category]" />
-    </template>
+    <Section v-for="category in allProduct" :key="category.categoryID" :categoryName="category.categoryName" :productArray="category.productArray" />
   </main>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from "vuex";
 
-import Section from "./Section.vue"
+import Section from "./Section.vue";
 export default {
   name: "Main",
   components: {
     Section,
   },
   methods: {
-    ...mapActions(["act_loadAllProduct"])
+    ...mapActions(["act_loadAllProduct"]),
   },
   computed: {
-    ...mapGetters(["allProduct"])
+    //allProduct
+    //[{id:xxxx, product:[{},{},...]},...]
+    ...mapGetters(["allProduct"]),
   },
-  created(){
-      this.act_loadAllProduct()
+  created() {
+    console.log("getting data after created");
+    this.act_loadAllProduct();
+  },
+  watch:{
+    allProduct(){
+
+    }
   }
-}
+  
+};
 </script>
 
 <style>

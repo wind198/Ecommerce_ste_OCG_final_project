@@ -1,12 +1,11 @@
-import Vuex from 'vuex'
-import Vue from 'vue'
-import allProduct from './modules/allProduct';
+import { createStore } from 'vuex'
+import allProduct from "./modules/allProduct"
+import userStatus from "./modules/userStatus"
 
-//Load Vuex
-Vue.useAttrs(Vuex)
-//Create store
-export default new Vuex.Store({
-    modules:{
-        allProduct
-    }
+export default createStore({
+ 
+  modules: {
+    allProduct,
+    userStatus
+  }
 })
